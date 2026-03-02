@@ -35,6 +35,23 @@ export default function App() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [formData, setFormData] = useState({ name: '', email: '', card: '' });
   const [bookingDetails, setBookingDetails] = useState({ flightDate: '', flightTime: '', gate: '' });
+  
+  const [selectedRoute, setSelectedRoute] = useState({
+    id: 'reyes',
+    name: 'Ruta de los Reyes',
+    price: 2999,
+    description: 'La experiencia clásica en la Suite Al-Amin.'
+  });
+  
+  const [vipTier, setVipTier] = useState({
+    id: 'standard',
+    name: 'Standard VIP',
+    price: 0
+  });
+
+  const [extraDays, setExtraDays] = useState(0);
+
+  const totalPrice = selectedRoute.price + vipTier.price + (extraDays * 450);
 
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,37 +139,83 @@ export default function App() {
               </button>
 
               {activeModal === 'booking' && (
-                <div className="p-8 md:p-12">
+                <div className="p-8 md:p-12 max-h-[90vh] overflow-y-auto">
                   <h3 className="text-3xl font-serif mb-2">Reserva tu Oasis</h3>
-                  <p className="text-gray-500 mb-8">Completa tus datos para acceder a la Suite Al-Amin.</p>
+                  <p className="text-gray-500 mb-8">Personaliza tu experiencia de lujo absoluta.</p>
                   
                   <form onSubmit={handleBooking} className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
-                        <User className="w-3 h-3" /> Nombre Completo
-                      </label>
-                      <input 
-                        required
-                        type="text" 
-                        placeholder="Ej: Mohamed Amine"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-desert-orange focus:ring-1 focus:ring-desert-orange outline-none transition-all"
-                        value={formData.name}
-                        onChange={e => setFormData({...formData, name: e.target.value})}
-                      />
+                    {/* Summary Box */}
+                    <div className="bg-desert-pink/20 p-4 rounded-2xl border border-desert-pink/40 mb-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-bold text-desert-dark">{selectedRoute.name}</span>
+                        <span className="text-sm font-serif">{selectedRoute.price}€</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs text-gray-500">{vipTier.name}</span>
+                        <span className="text-xs text-gray-500">+{vipTier.price}€</span>
+                      </div>
+                      {extraDays > 0 && (
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs text-gray-500">+{extraDays} Días Extra</span>
+                          <span className="text-xs text-gray-500">+{extraDays * 450}€</span>
+                        </div>
+                      )}
+                      <div className="border-t border-desert-pink/40 mt-2 pt-2 flex justify-between items-center">
+                        <span className="font-bold uppercase tracking-widest text-xs">Total</span>
+                        <span className="text-xl font-serif font-bold text-desert-orange">{totalPrice}€</span>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
-                        <Mail className="w-3 h-3" /> Correo Electrónico
-                      </label>
-                      <input 
-                        required
-                        type="email" 
-                        placeholder="vip@globalexperience.com"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-desert-orange focus:ring-1 focus:ring-desert-orange outline-none transition-all"
-                        value={formData.email}
-                        onChange={e => setFormData({...formData, email: e.target.value})}
-                      />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
+                          <User className="w-3 h-3" /> Nombre Completo
+                        </label>
+                        <input 
+                          required
+                          type="text" 
+                          placeholder="Ej: Mohamed Amine"
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-desert-orange focus:ring-1 focus:ring-desert-orange outline-none transition-all"
+                          value={formData.name}
+                          onChange={e => setFormData({...formData, name: e.target.value})}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
+                          <Mail className="w-3 h-3" /> Correo Electrónico
+                        </label>
+                        <input 
+                          required
+                          type="email" 
+                          placeholder="vip@globalexperience.com"
+                          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-desert-orange focus:ring-1 focus:ring-desert-orange outline-none transition-all"
+                          value={formData.email}
+                          onChange={e => setFormData({...formData, email: e.target.value})}
+                        />
+                      </div>
                     </div>
+
+                    <div className="space-y-4">
+                      <label className="text-xs uppercase tracking-widest font-bold text-gray-400">Nivel de Exclusividad (VIP Tier)</label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { id: 'standard', name: 'Standard', price: 0 },
+                          { id: 'royal', name: 'Royal', price: 999 },
+                          { id: 'imperial', name: 'Imperial', price: 1999 }
+                        ].map((tier) => (
+                          <button
+                            key={tier.id}
+                            type="button"
+                            onClick={() => setVipTier(tier)}
+                            className={`p-3 rounded-xl border text-center transition-all ${vipTier.id === tier.id ? 'border-desert-orange bg-desert-orange/10 text-desert-orange' : 'border-gray-100 hover:border-gray-300'}`}
+                          >
+                            <p className="text-xs font-bold">{tier.name}</p>
+                            <p className="text-[10px] opacity-60">+{tier.price}€</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
                       <label className="text-xs uppercase tracking-widest font-bold text-gray-400 flex items-center gap-2">
                         <CreditCard className="w-3 h-3" /> Método de Pago (Simulado)
@@ -170,7 +233,7 @@ export default function App() {
                       type="submit"
                       className="w-full luxury-gradient text-white py-4 rounded-xl font-bold uppercase tracking-widest shadow-xl hover:scale-[1.02] transition-transform"
                     >
-                      Confirmar Pago 2.999€
+                      Confirmar Pago {totalPrice}€
                     </button>
                     <p className="text-[10px] text-center text-gray-400 flex items-center justify-center gap-1">
                       <ShieldCheck className="w-3 h-3" /> Transacción segura y encriptada
@@ -185,8 +248,13 @@ export default function App() {
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
                   <h3 className="text-3xl font-serif mb-2">¡Pago Completado!</h3>
-                  <p className="text-gray-500 mb-8">Bienvenido a la élite, {formData.name.split(' ')[0]}.</p>
+                  <p className="text-gray-500 mb-4">Bienvenido a la élite, {formData.name.split(' ')[0]}.</p>
                   
+                  <div className="bg-desert-orange/5 border border-desert-orange/10 rounded-2xl p-4 mb-6 text-left">
+                    <p className="text-[10px] uppercase tracking-widest text-desert-orange font-bold mb-1">Tu Selección</p>
+                    <p className="font-serif text-lg">{selectedRoute.name} • <span className="italic">{vipTier.name}</span></p>
+                  </div>
+
                   <div className="bg-gray-50 rounded-2xl p-6 text-left space-y-4 mb-8">
                     <div className="flex justify-between items-center border-b border-gray-200 pb-3">
                       <span className="text-xs uppercase tracking-widest text-gray-400 font-bold">Vuelo Confirmado</span>
@@ -268,12 +336,13 @@ export default function App() {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1509059852496-f3822ae057bf?auto=format&fit=crop&q=80&w=2000" 
-            alt="Sahara Desert" 
+            src="https://images.unsplash.com/photo-1547234935-80c7145ec969?auto=format&fit=crop&q=80&w=2000" 
+            alt="Majestic Sahara Desert" 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-desert-dark/40 via-transparent to-desert-dark/80"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-desert-dark/60 via-desert-dark/20 to-desert-dark/95"></div>
+          <div className="absolute inset-0 sand-overlay"></div>
         </div>
 
         <div className="relative z-10 text-center text-white px-4 max-w-5xl">
@@ -282,29 +351,30 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-block px-4 py-1 bg-desert-orange/90 rounded-full text-xs uppercase tracking-[0.3em] font-bold mb-6">
-              Experiencia Exclusiva
+            <span className="inline-block px-6 py-2 gold-gradient rounded-full text-[10px] uppercase tracking-[0.4em] font-bold mb-8 text-desert-dark shadow-xl">
+              The Gold Standard of Travel
             </span>
-            <h1 className="text-6xl md:text-9xl font-serif mb-6 leading-tight">
-              Sahara <br /> <span className="italic">Majestic</span>
+            <h1 className="text-7xl md:text-[10rem] font-display mb-6 leading-none gold-text drop-shadow-2xl">
+              SAHARA
             </h1>
-            <p className="text-xl md:text-2xl font-light tracking-widest mb-12 max-w-2xl mx-auto italic">
+            <p className="text-2xl md:text-3xl font-serif mb-12 max-w-2xl mx-auto italic tracking-widest opacity-90">
               "Donde las estrellas del fútbol descansan"
             </p>
             
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-              <div className="glass-card p-6 rounded-2xl text-desert-dark min-w-[280px]">
-                <p className="text-xs uppercase tracking-widest opacity-60 mb-1">Desde</p>
-                <p className="text-4xl font-serif font-bold">2.999€</p>
-                <p className="text-sm font-semibold mt-2">Todo Incluido • 7 Días</p>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+              <div className="glass-card p-8 rounded-[2rem] text-white min-w-[300px] border-desert-gold/30">
+                <p className="text-[10px] uppercase tracking-[0.3em] opacity-60 mb-2">Exclusive Access From</p>
+                <p className="text-5xl font-serif font-bold gold-text">2.999€</p>
+                <div className="w-12 h-px bg-desert-gold/50 mx-auto my-4"></div>
+                <p className="text-xs font-semibold uppercase tracking-widest">Todo Incluido • 7 Días de Gloria</p>
               </div>
               <motion.button 
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(212, 175, 55, 0.4)" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveModal('booking')}
-                className="bg-white text-desert-dark px-10 py-5 rounded-full font-bold uppercase tracking-widest flex items-center gap-3 shadow-2xl"
+                className="gold-gradient text-desert-dark px-12 py-6 rounded-full font-bold uppercase tracking-[0.2em] flex items-center gap-4 shadow-2xl text-sm"
               >
-                Descubrir el Lujo <ArrowRight className="w-5 h-5" />
+                Reservar Mi Oasis <ArrowRight className="w-5 h-5" />
               </motion.button>
             </div>
           </motion.div>
@@ -312,98 +382,102 @@ export default function App() {
 
         {/* Scroll Indicator */}
         <motion.div 
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-2 opacity-60"
+          animate={{ y: [0, 15, 0] }}
+          transition={{ repeat: Infinity, duration: 2.5 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-3 opacity-50"
         >
-          <span className="text-[10px] uppercase tracking-[0.2em]">Detalles del Viaje</span>
-          <div className="w-px h-12 bg-white/40"></div>
+          <span className="text-[9px] uppercase tracking-[0.4em] font-bold gold-text">Explore The Sands</span>
+          <div className="w-px h-16 bg-gradient-to-b from-desert-gold to-transparent"></div>
         </motion.div>
       </section>
 
       {/* Details Section - The Poster Back */}
-      <section className="py-24 px-6 md:px-12 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      <section className="py-32 px-6 md:px-12 bg-desert-sand relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-desert-dark to-transparent opacity-10"></div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
             
             {/* Left Column: The Story */}
-            <div className="space-y-12">
-              <div>
-                <h2 className="text-5xl md:text-7xl font-serif mb-8 leading-tight">
-                  Suite Presidencial <br /> <span className="text-desert-orange italic">Hotel Al-Amin</span>
+            <div className="space-y-16">
+              <div className="relative">
+                <div className="absolute -left-8 top-0 w-1 h-24 gold-gradient"></div>
+                <h2 className="text-6xl md:text-8xl font-serif mb-10 leading-tight text-desert-dark">
+                  Suite <span className="gold-text italic">Imperial</span> <br /> Hotel Al-Amin
                 </h2>
-                <p className="text-xl text-gray-600 leading-relaxed font-light">
-                  Sigue los pasos de la élite mundial. Alójate en la misma suite donde <strong>Cristiano Ronaldo</strong> encontró su oasis de paz. Una experiencia diseñada solo para quienes buscan lo extraordinario.
+                <p className="text-2xl text-gray-700 leading-relaxed font-light italic border-l-4 border-desert-gold/20 pl-8">
+                  "Sigue los pasos de la élite mundial. Alójate en la misma suite donde <strong>Cristiano Ronaldo</strong> encontró su oasis de paz."
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <FeatureItem 
-                  icon={<Hotel className="text-desert-orange" />}
+                  icon={<Hotel className="text-desert-gold w-8 h-8" />}
                   title="Alojamiento Real"
                   items={[
                     "7 noches en la Suite Presidencial",
                     "Terraza privada con vistas al desierto",
-                    "Jacuzzi privado",
-                    "Servicio 24h personalizado"
+                    "Jacuzzi privado de mármol",
+                    "Servicio 24h de mayordomía"
                   ]}
                 />
                 <FeatureItem 
-                  icon={<Utensils className="text-desert-orange" />}
-                  title="Gastronomía Gourmet"
+                  icon={<Utensils className="text-desert-gold w-8 h-8" />}
+                  title="Gastronomía de Oro"
                   items={[
                     "Desayuno buffet internacional",
-                    "Almuerzo gourmet diario",
-                    "Cena temática bajo las estrellas",
-                    "Bebidas premium incluidas"
+                    "Almuerzo gourmet de autor",
+                    "Cena temática bajo el firmamento",
+                    "Cava y bebidas premium ilimitadas"
                   ]}
                 />
                 <FeatureItem 
-                  icon={<Compass className="text-desert-orange" />}
-                  title="Aventura Sahara"
+                  icon={<Compass className="text-desert-gold w-8 h-8" />}
+                  title="Expediciones Privadas"
                   items={[
                     "Paseo en camello al atardecer",
-                    "Cena tradicional en jaima",
-                    "Excursión en 4x4 por las dunas",
-                    "Observación de estrellas con guía"
+                    "Cena tradicional en jaima real",
+                    "Safari en 4x4 por dunas vírgenes",
+                    "Astronomía con guía experto"
                   ]}
                 />
                 <FeatureItem 
-                  icon={<Plane className="text-desert-orange" />}
-                  title="Transporte VIP"
+                  icon={<Plane className="text-desert-gold w-8 h-8" />}
+                  title="Logística VIP"
                   items={[
-                    "Vuelos ida y vuelta incluidos",
-                    "Traslado privado Aeropuerto–Hotel",
-                    "Recepción VIP exclusiva",
-                    "Spa y masaje relajante"
+                    "Vuelos en Business Class",
+                    "Traslado en Mercedes-Benz Clase G",
+                    "Recepción VIP en pista",
+                    "Acceso ilimitado al Spa Real"
                   ]}
                 />
               </div>
             </div>
 
             {/* Right Column: Visual & Extras */}
-            <div className="space-y-8">
-              <div className="relative rounded-3xl overflow-hidden aspect-[4/5] shadow-2xl group">
+            <div className="space-y-12">
+              <div className="relative rounded-[3rem] overflow-hidden aspect-[3/4] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] group">
                 <img 
-                  src="https://images.unsplash.com/photo-1542332213-31f87348057f?auto=format&fit=crop&q=80&w=1000" 
+                  src="https://images.unsplash.com/photo-1542332213-31f87348057f?auto=format&fit=crop&q=80&w=1200" 
                   alt="Luxury Desert Suite" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-desert-dark/80 via-transparent to-transparent flex flex-col justify-end p-8 text-white">
-                  <p className="text-sm uppercase tracking-widest mb-2">Vistas desde la Suite</p>
-                  <h3 className="text-3xl font-serif italic">"La experiencia VIP que estabas esperando"</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-desert-dark/90 via-transparent to-transparent flex flex-col justify-end p-12 text-white">
+                  <span className="text-xs uppercase tracking-[0.4em] gold-text mb-4 font-bold">The View From Above</span>
+                  <h3 className="text-4xl font-serif italic leading-tight">"La experiencia VIP que <br /> estabas esperando"</h3>
                 </div>
               </div>
 
-              <div className="bg-desert-pink/30 p-8 rounded-3xl border border-desert-pink">
-                <h4 className="flex items-center gap-2 text-xl font-serif mb-6">
-                  <Sparkles className="text-desert-orange" /> Extras Exclusivos
+              <div className="desert-card p-10 rounded-[2.5rem] border-desert-gold/20 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 gold-gradient opacity-10 blur-3xl -mr-16 -mt-16"></div>
+                <h4 className="flex items-center gap-3 text-2xl font-serif mb-8 text-desert-dark">
+                  <Sparkles className="text-desert-gold" /> Detalles de Distinción
                 </h4>
-                <ul className="space-y-4">
-                  <ExtraItem icon={<Star className="w-4 h-4" />} text="Certificado 'Experiencia de Estrella'" />
-                  <ExtraItem icon={<Camera className="w-4 h-4" />} text="Fotografía profesional en el desierto" />
-                  <ExtraItem icon={<Gift className="w-4 h-4" />} text="Regalo sorpresa de bienvenida" />
+                <ul className="space-y-6">
+                  <ExtraItem icon={<Star className="w-5 h-5 text-desert-gold" />} text="Certificado 'Experiencia de Estrella'" />
+                  <ExtraItem icon={<Camera className="w-5 h-5 text-desert-gold" />} text="Sesión fotográfica privada en las dunas" />
+                  <ExtraItem icon={<Gift className="w-5 h-5 text-desert-gold" />} text="Cofre de bienvenida con sedas locales" />
                 </ul>
               </div>
             </div>
@@ -411,51 +485,135 @@ export default function App() {
         </div>
       </section>
 
-      {/* Premium Desert Walk Section */}
-      <section className="py-24 bg-desert-dark text-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row gap-16 items-center">
-            <div className="lg:w-1/2">
-              <span className="text-desert-orange font-bold tracking-[0.3em] uppercase text-xs">Servicio Adicional</span>
-              <h2 className="text-5xl md:text-6xl font-serif mt-4 mb-8">Paseo Premium <br /> por el Desierto</h2>
-              <p className="text-lg text-white/70 mb-10 leading-relaxed">
-                Una inmersión profunda en el Sahara. Ruta privada por las dunas del Sahara con guía experto local. Atardecer y amanecer en pleno desierto, paradas para fotografías profesionales.
-              </p>
-              
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                    <Clock className="text-desert-orange" />
-                  </div>
-                  <div>
-                    <p className="font-bold">3 Días Incluidos</p>
-                    <p className="text-sm text-white/50">Posibilidad de ampliar (¡tú eliges!)</p>
+      {/* Route Selection Section */}
+      <section className="py-32 px-6 bg-desert-dark relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <img src="https://www.transparenttextures.com/patterns/sandpaper.png" className="w-full h-full object-repeat" alt="texture" />
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-20">
+            <span className="gold-text font-bold tracking-[0.5em] uppercase text-xs">Curated Journeys</span>
+            <h2 className="text-6xl md:text-7xl font-serif mt-6 mb-8 text-white">Elige tu <span className="italic gold-text">Legado</span></h2>
+            <div className="w-24 h-px gold-gradient mx-auto"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                id: 'reyes',
+                name: 'Ruta de los Reyes',
+                price: 2999,
+                description: 'La experiencia clásica en la Suite Al-Amin con paseos tradicionales.',
+                image: 'https://images.unsplash.com/photo-1542332213-31f87348057f?auto=format&fit=crop&q=80&w=600'
+              },
+              {
+                id: 'oro',
+                name: 'Dunas de Oro',
+                price: 3499,
+                description: 'Exploración profunda en 4x4 y noches en jaimas de cristal exclusivas.',
+                image: 'https://images.unsplash.com/photo-1509059852496-f3822ae057bf?auto=format&fit=crop&q=80&w=600'
+              },
+              {
+                id: 'cristal',
+                name: 'Oasis de Cristal',
+                price: 3199,
+                description: 'Enfoque en bienestar, spa en el desierto y meditación bajo las estrellas.',
+                image: 'https://images.unsplash.com/photo-1501535033-a59812adab1c?auto=format&fit=crop&q=80&w=600'
+              }
+            ].map((route) => (
+              <motion.div 
+                key={route.id}
+                whileHover={{ y: -15 }}
+                onClick={() => setSelectedRoute(route)}
+                className={`group relative rounded-[2.5rem] overflow-hidden cursor-pointer border-2 transition-all duration-500 ${selectedRoute.id === route.id ? 'border-desert-gold shadow-[0_0_50px_rgba(212,175,55,0.3)]' : 'border-white/5 shadow-2xl'}`}
+              >
+                <div className="aspect-[3/4] relative">
+                  <img src={route.image} alt={route.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-desert-dark via-desert-dark/20 to-transparent"></div>
+                  <div className="absolute bottom-0 p-10 text-white">
+                    <p className="text-xs uppercase tracking-[0.3em] gold-text mb-3 font-bold">{route.price}€</p>
+                    <h3 className="text-3xl font-serif mb-4">{route.name}</h3>
+                    <p className="text-sm opacity-60 leading-relaxed line-clamp-3">{route.description}</p>
+                    {selectedRoute.id === route.id && (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="mt-6 flex items-center gap-3 text-desert-gold font-bold text-xs uppercase tracking-[0.2em]"
+                      >
+                        <CheckCircle2 className="w-5 h-5" /> Itinerario Seleccionado
+                      </motion.div>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                    <Waves className="text-desert-orange" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Desert Walk Section */}
+      <section className="py-32 bg-desert-sand relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <img src="https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?auto=format&fit=crop&q=80&w=2000" className="w-full h-full object-cover grayscale" alt="desert-bg" referrerPolicy="no-referrer" />
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="flex flex-col lg:flex-row gap-24 items-center">
+            <div className="lg:w-1/2">
+              <span className="gold-text font-bold tracking-[0.5em] uppercase text-xs">The Ultimate Journey</span>
+              <h2 className="text-6xl md:text-8xl font-serif mt-6 mb-10 text-desert-dark leading-tight">Paseo <span className="italic gold-text">Premium</span> <br /> del Sahara</h2>
+              <p className="text-xl text-gray-600 mb-12 leading-relaxed font-light">
+                Una inmersión profunda en el alma del Sahara. Ruta privada por las dunas vírgenes con guías expertos locales. Atardecer y amanecer en pleno desierto, paradas para capturar momentos eternos.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center shadow-xl">
+                    <Clock className="text-desert-dark w-8 h-8" />
                   </div>
                   <div>
-                    <p className="font-bold">Noche Opcional</p>
-                    <p className="text-sm text-white/50">En jaima de lujo bajo el firmamento</p>
+                    <p className="font-bold text-desert-dark text-lg">3 Días Base</p>
+                    <p className="text-sm text-gray-500">Inmersión total incluida</p>
+                  </div>
+                </div>
+                
+                <div className="desert-card p-6 rounded-2xl flex items-center justify-between border-desert-gold/20">
+                  <span className="text-xs uppercase tracking-widest font-bold text-desert-dark">Días Extra</span>
+                  <div className="flex items-center gap-6">
+                    <button 
+                      onClick={() => setExtraDays(Math.max(0, extraDays - 1))}
+                      className="w-10 h-10 rounded-full border border-desert-gold/30 flex items-center justify-center hover:gold-gradient hover:text-desert-dark transition-all text-desert-gold"
+                    >
+                      -
+                    </button>
+                    <span className="text-2xl font-serif font-bold w-6 text-center text-desert-dark">{extraDays}</span>
+                    <button 
+                      onClick={() => setExtraDays(extraDays + 1)}
+                      className="w-10 h-10 rounded-full border border-desert-gold/30 flex items-center justify-center hover:gold-gradient hover:text-desert-dark transition-all text-desert-gold"
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
               </div>
 
               <button 
                 onClick={() => setActiveModal('booking')}
-                className="mt-12 border border-white/30 px-8 py-4 rounded-full hover:bg-white hover:text-desert-dark transition-all uppercase tracking-widest text-sm font-bold"
+                className="mt-16 gold-gradient text-desert-dark px-12 py-6 rounded-full hover:scale-105 transition-all uppercase tracking-[0.3em] text-xs font-bold shadow-2xl"
               >
-                Personalizar mi Ruta
+                Personalizar Mi Ruta Real
               </button>
             </div>
             
-            <div className="lg:w-1/2 grid grid-cols-2 gap-4">
-              <img src="https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?auto=format&fit=crop&q=80&w=500" className="rounded-2xl h-64 w-full object-cover" alt="Desert 1" referrerPolicy="no-referrer" />
-              <img src="https://images.unsplash.com/photo-1445262102387-5fbb30a5e59d?auto=format&fit=crop&q=80&w=500" className="rounded-2xl h-64 w-full object-cover mt-8" alt="Desert 2" referrerPolicy="no-referrer" />
-              <img src="https://images.unsplash.com/photo-1501535033-a59812adab1c?auto=format&fit=crop&q=80&w=500" className="rounded-2xl h-64 w-full object-cover -mt-8" alt="Desert 3" referrerPolicy="no-referrer" />
-              <img src="https://images.unsplash.com/photo-1547234935-80c7145ec969?auto=format&fit=crop&q=80&w=500" className="rounded-2xl h-64 w-full object-cover" alt="Desert 4" referrerPolicy="no-referrer" />
+            <div className="lg:w-1/2 relative">
+              <div className="absolute -inset-4 gold-gradient opacity-20 blur-3xl rounded-full"></div>
+              <div className="grid grid-cols-2 gap-6 relative">
+                <img src="https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?auto=format&fit=crop&q=80&w=600" className="rounded-[2rem] h-80 w-full object-cover shadow-2xl" alt="Desert 1" referrerPolicy="no-referrer" />
+                <img src="https://images.unsplash.com/photo-1445262102387-5fbb30a5e59d?auto=format&fit=crop&q=80&w=600" className="rounded-[2rem] h-80 w-full object-cover mt-12 shadow-2xl" alt="Desert 2" referrerPolicy="no-referrer" />
+                <img src="https://images.unsplash.com/photo-1501535033-a59812adab1c?auto=format&fit=crop&q=80&w=600" className="rounded-[2rem] h-80 w-full object-cover -mt-12 shadow-2xl" alt="Desert 3" referrerPolicy="no-referrer" />
+                <img src="https://images.unsplash.com/photo-1547234935-80c7145ec969?auto=format&fit=crop&q=80&w=600" className="rounded-[2rem] h-80 w-full object-cover shadow-2xl" alt="Desert 4" referrerPolicy="no-referrer" />
+              </div>
             </div>
           </div>
         </div>

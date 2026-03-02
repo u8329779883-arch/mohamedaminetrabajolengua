@@ -1,20 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-serif: "Playfair Display", serif;
   --font-sans: "Inter", sans-serif;
+  --font-display: "Cinzel", serif;
   
   --color-desert-deep: #4C1D95;
   --color-desert-orange: #F97316;
+  --color-desert-gold: #D4AF37;
   --color-desert-pink: #FBCFE8;
-  --color-desert-sand: #FB923C;
+  --color-desert-sand: #F5E6D3;
   --color-desert-dark: #1E1B4B;
 }
 
 @layer base {
   body {
-    @apply font-sans bg-[#FDF2F8] text-desert-dark antialiased;
+    @apply font-sans bg-desert-sand text-desert-dark antialiased;
+    background-image: url("https://www.transparenttextures.com/patterns/sandpaper.png");
   }
   
   h1, h2, h3, h4 {
@@ -26,8 +29,16 @@
   background: linear-gradient(135deg, #4C1D95 0%, #701A75 50%, #F97316 100%);
 }
 
+.gold-gradient {
+  background: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+}
+
 .glass-card {
-  @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+  @apply bg-white/40 backdrop-blur-xl border border-white/30 shadow-2xl;
+}
+
+.desert-card {
+  @apply bg-[#F5E6D3]/80 backdrop-blur-md border border-[#D4AF37]/30 shadow-xl;
 }
 
 .text-reveal {
@@ -43,4 +54,14 @@
 @keyframes reveal {
   0% { transform: translateY(100%); }
   100% { transform: translateY(0); }
+}
+
+.sand-overlay {
+  background: radial-gradient(circle at center, transparent 0%, rgba(245, 230, 211, 0.2) 100%);
+}
+
+.gold-text {
+  background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
